@@ -1,13 +1,14 @@
-package com.br.natanfc.filmesflix.viewmodel
+package com.br.natanfc.filmesflix.framework.viewmodel
 
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.br.natanfc.filmesflix.api.MovieRestApiTask
-import com.br.natanfc.filmesflix.model.Movie
-import com.br.natanfc.filmesflix.repository.MovieRepository
-import java.lang.Exception
+import com.br.natanfc.filmesflix.framework.api.MovieRestApiTask
+import com.br.natanfc.filmesflix.data.MovieRepository
+import com.br.natanfc.filmesflix.domain.Movie
+import com.br.natanfc.filmesflix.imlementations.MovieDataSourceImplementation
+import com.br.natanfc.filmesflix.usecase.MovieListUseCase
 
 class MovieListViewModel : ViewModel() {
 
@@ -15,8 +16,11 @@ class MovieListViewModel : ViewModel() {
         val TAG = javaClass::class.java.simpleName
     }
 
+    //Cada variável chama uma camada
     private val movieRestApiTask = MovieRestApiTask()
-    private val movieRepository = MovieRepository(movieRestApiTask)
+    private val movieDataSource = MovieDataSourceImplementation(movieRestApiTask)
+    private val movieRepository = MovieRepository(movieDataSource)
+    private val movieListUseCase = MovieListUseCase(movieRepository)
 
     private var _moviesList = MutableLiveData<List<Movie>>() //Mutable significa mutável
     val moviesList: LiveData<List<Movie>> //O valor do LiveData não é mutável, mas modifica pois tem o valor do Mutable
@@ -30,7 +34,8 @@ class MovieListViewModel : ViewModel() {
 
         Thread {
             try {
-                _moviesList.postValue(movieRepository.getAllMovies())
+                //TODO 1 Pede para que o _moviesList observe o invoke, ou execução do useCase
+                _moviesList.postValue(movieListUseCase.invoke())
             } catch (exception: Exception) {
                 Log.d(TAG, exception.message.toString())
             }

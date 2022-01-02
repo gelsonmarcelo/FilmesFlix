@@ -1,19 +1,19 @@
-package com.br.natanfc.filmesflix.repository
+package com.br.natanfc.filmesflix.imlementations
 
 import android.util.Log
-import com.br.natanfc.filmesflix.api.MovieRestApiTask
-import com.br.natanfc.filmesflix.model.Movie
+import com.br.natanfc.filmesflix.framework.api.MovieRestApiTask
+import com.br.natanfc.filmesflix.data.MovieDataSource
+import com.br.natanfc.filmesflix.domain.Movie
 
-class MovieRepository(private val movieRestApiTask: MovieRestApiTask) {
-
+class MovieDataSourceImplementation(private val movieRestApiTask: MovieRestApiTask) : MovieDataSource {
     companion object {
         val TAG = javaClass::class.java.simpleName
     }
 
     private val movieList = arrayListOf<Movie>()
 
-    fun getAllMovies(): List<Movie> {
-
+    //TODO 5 Aqui está implementada e aqui fara a request e obterá a resposta (Povoamento da lista)
+    override fun getAllMoviesFromApi(): List<Movie> {
         //Chamada da API
         val request = movieRestApiTask.retrofitApi().getAllMovies().execute()
 
@@ -28,5 +28,4 @@ class MovieRepository(private val movieRestApiTask: MovieRestApiTask) {
         }
         return movieList
     }
-
 }
